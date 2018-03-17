@@ -482,6 +482,16 @@ def test_evaluation(testing_data, head_pred, tail_pred, hr_t, tr_h):
 
 
 def main(_):
+
+    # create a log file
+    # clear everything (so that it only saves data for the most recent run)
+    softmax_noweight_log = open("softmax_noweight_log.txt", "w")
+    softmax_noweight_log.write("")
+    softmax_noweight_log.close()
+    # open in append mode
+    softmax_noweight_log = open("softmax_noweight_log.txt", "a")
+
+
     parser = argparse.ArgumentParser(description='ProjE.')
     parser.add_argument('--data', dest='data_dir', type=str, help="Data folder", default='./data/FB15k/')
     parser.add_argument('--lr', dest='lr', type=float, help="Learning rate", default=0.01)
@@ -508,7 +518,8 @@ def main(_):
 
     args = parser.parse_args()
 
-    print(args)
+    softmax_noweight_log.write(args)
+    softmax_noweight_log.write("\n")
 
     model = ProjE(args.data_dir, embed_dim=args.dim, combination_method=args.combination_method,
                   dropout=args.drop_out, neg_weight=args.neg_weight)
@@ -529,7 +540,8 @@ def main(_):
         if args.load_model is not None and os.path.exists(args.load_model):
             saver.restore(session, args.load_model)
             iter_offset = int(args.load_model.split('.')[-2].split('_')[-1]) + 1
-            print("Load model from %s, iteration %d restored." % (args.load_model, iter_offset))
+            softmax_noweight_log.write("Load model from %s, iteration %d restored." % (args.load_model, iter_offset))
+            softmax_noweight_log.write("\n")
 
         total_inst = model.n_train
 
@@ -566,9 +578,11 @@ def main(_):
             for i in range(args.n_worker):
                 evaluation_queue.put(None)
 
-            print("waiting for worker finishes their work")
+            softmax_noweight_log.write("waiting for worker finishes their work")
+            softmax_noweight_log.write("\n")
             evaluation_queue.join()
-            print("all worker stopped.")
+            softmax_noweight_log.write("all worker stopped.")
+            softmax_noweight_log.write("\n")
             while evaluation_count > 0:
                 evaluation_count -= 1
 
@@ -578,17 +592,19 @@ def main(_):
                 accu_filtered_mean_rank_h += fmrh
                 accu_filtered_mean_rank_t += fmrt
 
-            print(
+            softmax_noweight_log.write(
                 "[%s] INITIALIZATION [HEAD PREDICTION] MEAN RANK: %.1f FILTERED MEAN RANK %.1f HIT@10 %.3f FILTERED HIT@10 %.3f" %
                 (test_type, np.mean(accu_mean_rank_h), np.mean(accu_filtered_mean_rank_h),
                  np.mean(np.asarray(accu_mean_rank_h, dtype=np.int32) < 10),
                  np.mean(np.asarray(accu_filtered_mean_rank_h, dtype=np.int32) < 10)))
+            softmax_noweight_log.write("\n")
 
-            print(
+            softmax_noweight_log.write(
                 "[%s] INITIALIZATION [TAIL PREDICTION] MEAN RANK: %.1f FILTERED MEAN RANK %.1f HIT@10 %.3f FILTERED HIT@10 %.3f" %
                 (test_type, np.mean(accu_mean_rank_t), np.mean(accu_filtered_mean_rank_t),
                  np.mean(np.asarray(accu_mean_rank_t, dtype=np.int32) < 10),
                  np.mean(np.asarray(accu_filtered_mean_rank_t, dtype=np.int32) < 10)))
+            softmax_noweight_log.write("\n")
 
         for n_iter in range(iter_offset, args.max_iter):
             start_time = timeit.default_timer()
@@ -596,12 +612,14 @@ def main(_):
             accu_re_loss = 0.
             ninst = 0
 
-            print("initializing raw training data...")
+            softmax_noweight_log.write("initializing raw training data...")
+            softmax_noweight_log.write("\n")
             nbatches_count = 0
             for dat in model.raw_training_data(batch_size=args.batch):
                 raw_training_data_queue.put(dat)
                 nbatches_count += 1
-            print("raw training data initialized.")
+            softmax_noweight_log.write("raw training data initialized.")
+            softmax_noweight_log.write("\n")
 
             while nbatches_count > 0:
                 nbatches_count -= 1
@@ -619,20 +637,24 @@ def main(_):
                 ninst += len(hr_tlist) + len(tr_hlist)
 
                 if ninst % (5000) is not None:
-                    print(
+                    softmax_noweight_log.write(
                         '[%d sec](%d/%d) : %.2f -- loss : %.5f rloss: %.5f ' % (
                             timeit.default_timer() - start_time, ninst, total_inst, float(ninst) / total_inst,
                             l / (len(hr_tlist) + len(tr_hlist)),
                             args.loss_weight * (rl / (len(hr_tlist) + len(tr_hlist)))),
                         end='\r')
-            print("")
-            print("iter %d avg loss %.5f, time %.3f" % (n_iter, accu_loss / ninst, timeit.default_timer() - start_time))
+                    softmax_noweight_log.write("\n")
+            softmax_noweight_log.write("")
+            softmax_noweight_log.write("\n")
+            softmax_noweight_log.write("iter %d avg loss %.5f, time %.3f" % (n_iter, accu_loss / ninst, timeit.default_timer() - start_time))
+            softmax_noweight_log.write("\n")
 
             if n_iter % args.save_per == 0 or n_iter == args.max_iter - 1:
                 save_path = saver.save(session,
                                        os.path.join(args.save_dir,
                                                     "ProjE_" + str(args.prefix) + "_" + str(n_iter) + ".ckpt"))
-                print("Model saved at %s" % save_path)
+                softmax_noweight_log.write("Model saved at %s" % save_path)
+                softmax_noweight_log.write("\n")
 
             if n_iter % args.eval_per == 0 or n_iter == args.max_iter - 1:
 
@@ -654,9 +676,11 @@ def main(_):
                     for i in range(args.n_worker):
                         evaluation_queue.put(None)
 
-                    print("waiting for worker finishes their work")
+                    softmax_noweight_log.write("waiting for worker finishes their work")
+                    softmax_noweight_log.write("\n")
                     evaluation_queue.join()
-                    print("all worker stopped.")
+                    softmax_noweight_log.write("all worker stopped.")
+                    softmax_noweight_log.write("\n")
                     while evaluation_count > 0:
                         evaluation_count -= 1
 
@@ -666,17 +690,20 @@ def main(_):
                         accu_filtered_mean_rank_h += fmrh
                         accu_filtered_mean_rank_t += fmrt
 
-                    print(
+                    softmax_noweight_log.write(
                         "[%s] ITER %d [HEAD PREDICTION] MEAN RANK: %.1f FILTERED MEAN RANK %.1f HIT@10 %.3f FILTERED HIT@10 %.3f" %
                         (test_type, n_iter, np.mean(accu_mean_rank_h), np.mean(accu_filtered_mean_rank_h),
                          np.mean(np.asarray(accu_mean_rank_h, dtype=np.int32) < 10),
                          np.mean(np.asarray(accu_filtered_mean_rank_h, dtype=np.int32) < 10)))
+                    softmax_noweight_log.write("\n")
 
-                    print(
+                    softmax_noweight_log.write(
                         "[%s] ITER %d [TAIL PREDICTION] MEAN RANK: %.1f FILTERED MEAN RANK %.1f HIT@10 %.3f FILTERED HIT@10 %.3f" %
                         (test_type, n_iter, np.mean(accu_mean_rank_t), np.mean(accu_filtered_mean_rank_t),
                          np.mean(np.asarray(accu_mean_rank_t, dtype=np.int32) < 10),
                          np.mean(np.asarray(accu_filtered_mean_rank_t, dtype=np.int32) < 10)))
+                    softmax_noweight_log.write("\n")
+    softmax_noweight_log.close()
 
 
 if __name__ == '__main__':
