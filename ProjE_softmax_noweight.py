@@ -30,6 +30,14 @@ class ProjE:
         return self.__tr_h
 
     @property
+    def train_hr_t(self):
+        return self.__train_hr_t
+
+    @property
+    def train_tr_h(self):
+        return self.__train_tr_h
+
+    @property
     def ent_embedding(self):
         return self.__ent_embedding
 
@@ -73,7 +81,7 @@ class ProjE:
         start = 0
         while start < n_triple:
             end = min(start + batch_size, n_triple)
-            yield self.__test_triple[start:end, :]
+            yield self.__valid_triple[start:end, :]
             start = end
 
     def corrupted_training(self, htr):
@@ -551,7 +559,7 @@ def main(_):
         data_generators = list()
         for i in range(args.n_generator):
             data_generators.append(Process(target=data_generator_func, args=(
-                raw_training_data_queue, training_data_queue, model.tr_h, model.hr_t, model.n_entity, args.neg_weight)))
+                raw_training_data_queue, training_data_queue, model.train_tr_h, model.train_hr_t, model.n_entity, args.neg_weight)))
             data_generators[-1].start()
 
         evaluation_queue = JoinableQueue()

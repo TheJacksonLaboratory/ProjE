@@ -2,7 +2,11 @@
 
 ## ProjE
 
-Embedding Projection for Knowledge Graph Completion
+ProjE: Embedding Projection for Knowledge Graph Completion
+
+Accepted at AAAI'2017.
+
+**Please also check our latest work (Open-World Knowledge Graph Completion) accepted at AAAI2018: https://github.com/bxshi/ConMask**
 
 ---
 
