@@ -5,9 +5,6 @@ and then eneter your password.
 
 2. log in to a gpu node to run an interactive job on GPU:
 
-$ qsub -I -q gpu -l nodes=1:ppn=1
-
-Note: You can request for 3 precessors:
 $ qsub -I -q gpu -l nodes=1:ppn=3
 
 Option: You can add -m abe to the above command by which you receive an email when the job is finished or killed. 
