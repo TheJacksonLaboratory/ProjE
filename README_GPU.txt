@@ -12,7 +12,7 @@ Note: You can just enter qsub -I -q gpu, but JAX IT asked us to specify number o
 Option: You can add -m abe to the above command by which you receive an email when the job is finished or killed. 
 
 
-3. Go to the directory for Project 
+3. Go to the directory of ProjE
 $ cd/projects/robinson-lab/ProjE_JAX/ProjE-master
 
 
