@@ -522,7 +522,7 @@ def main(_):
 
     args = parser.parse_args()
 
-    softmax_log.write(args)
+    softmax_log.write(str(args))
     softmax_log.write("\n")
 
     model = ProjE(args.data_dir, embed_dim=args.dim, combination_method=args.combination_method,
