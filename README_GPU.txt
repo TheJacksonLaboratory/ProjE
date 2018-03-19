@@ -7,8 +7,6 @@ and then eneter your password.
 
 $ qsub -I -q gpu -l nodes=1:ppn=3
 
-Option: You can add -m abe to the above command by which you receive an email when the job is finished or killed. 
-
 
 3. Go to the directory of ProjE
 $ cd/projects/robinson-lab/ProjE_JAX/ProjE-master
