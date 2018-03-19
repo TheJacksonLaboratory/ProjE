@@ -21,7 +21,7 @@ Note: If not unzipped, first unzip the ProjE-master.zip and data.zip. Move the u
 
 4. Activate tensorflow using:
 
-$ source active tensorflow
+$ source activate tensorflow
 
 Note: (tensorflow)$  # Your prompt should change 
 
