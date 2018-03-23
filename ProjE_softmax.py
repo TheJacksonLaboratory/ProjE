@@ -706,6 +706,10 @@ def main(_):
                          np.mean(np.asarray(accu_mean_rank_t, dtype=np.int32) < 10),
                          np.mean(np.asarray(accu_filtered_mean_rank_t, dtype=np.int32) < 10)))
                     softmax_log.write("\n")
+
+        # terminate workers after iterations are done
+        for i in range(args.n_worker):
+            worker.terminate()
     softmax_log.close()
 
 
