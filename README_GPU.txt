@@ -28,6 +28,6 @@ Note: (tensorflow)$  # Your prompt should change
 
 $ python ./ProjE_softmax.py --dim 200 --batch 200 --data ./data/FB15k/ --eval_per 1 --worker 3 --eval_batch 500 --max_iter 100 --generator 10
 
-Note: you may change the dataset and choose ./data/WN18 or change other parameters such as max_iter.
+Note: you may change the dataset and choose ./data/WN18.
 
  
